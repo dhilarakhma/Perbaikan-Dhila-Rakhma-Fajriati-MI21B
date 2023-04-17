@@ -1,0 +1,40 @@
+{
+  "patients": [
+    {
+      "date": "2023-04-16",
+      "name": "Dhila Rakhma Fajriati",
+      "age": "20",
+      "poli": "Poli Gigi",
+      "id": 1
+    },
+    {
+      "date": "2023-04-17",
+      "name": "Citra Lestari",
+      "age": "10",
+      "poli": "Poli Anak",
+      "id": 2
+    },
+    {
+      "date": "2023-04-18",
+      "name": "Dedi Hidayat",
+      "age": "25",
+      "poli": "Poli Umum",
+      "id": 3
+    }
+  ],
+  
+  "polies": [
+    {
+      "id": 1,
+      "name": "Poli Umum"
+    },
+    {
+      "id": 2,
+      "name": "Poli Anak"
+    },
+    {
+      "id": 3,
+      "name": "Poli Gigi"
+    }
+  ]
+}
