@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        tr,
+        th,
+        td,
+        table {
+            border: 1px solid black;
+            padding: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <H1>Klinik Avicenna</H1>
+        <p>Berikut adalah daftar pasien :</p>
+        <div>
+            <input id="date" type="date">
+            <input id="name" type="text" placeholder="Isi nama pasien disini...">
+            <input id="age" type="number" placeholder="Isi usia disini...">
+            <select id="poli">
+                <option>Pilih</option>
+            </select>
+            <button id="button" onclick="saveData()">Simpan</button>
+        </div>
+        <table style="margin-top: 10px;">
+            <thead>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Nama</th>
+                <th>Age</th>
+                <th>Poli</th>
+                <th colspan="2" style="text-align: center">Action</th>
+            </thead>
+
+            <tbody id="result"></tbody>
+        </table>
+    </div>
+    <script src="/axios.min.js"></script>
+    <script>
+
+        // CRUD EDIT
+        const editData = (id, date, name, age, poli) => {
+            document.getElementById("date").value = date;
+            document.getElementById("name").value = name;
+            document.getElementById("age").value = age;
+            document.getElementById("poli").value = poli;
+            document.getElementById("button").innerText = "Ubah";
+            document
+                .getElementById("button")
+                .setAttribute("onclick", `updateData(${id})`);
+        };
+
+        // CRUD UPDATE
+        const updateData = async (id) => {
+            let dateFrom = document.getElementById("date").value;
+            let nameForm = document.getElementById("name").value;
+            let ageForm = document.getElementById("age").value;
+            let poliForm = document.getElementById("poli").value;
+            let text = `Betul data ini akan diubah?`;
+            if (confirm(text) == true) {
+                await axios
+                    .patch(`http://localhost:3000/patients/${id}`, {
+                        date: dateFrom,
+                        name: nameForm,
+                        age: ageForm,
+                        poli: poliForm,
+                    })
+                    .then((response) => {
+                        console.log(response);
+                    })
+                    .catch((error) => {
+                        console.log(error.message);
+                    });
+            }
+        };
+
+        // CRUD SAVE DATA
+        const saveData = async () => {
+            let dateFrom = document.getElementById('date').value;
+            let nameForm = document.getElementById('name').value;
+            let ageForm = document.getElementById('age').value;
+            let poliForm = document.getElementById('poli').value;
+            await axios.post(`http://localhost:3000/patients`, {
+                date: dateFrom,
+                name: nameForm,
+                age: ageForm,
+                poli: poliForm
+            })
+                .then((response) => {
+                    console.log(response);
+                })
+                .catch((error) => {
+                    console.log(error.message)
+                });
+        }
+
+        // CRUD DELETE
+        const deleteData = async (id) => {
+            let text = `Betul data ini akan dihapus?`;
+            if (confirm(text) == true) {
+                await axios.delete(`http://localhost:3000/patients/${id}`)
+                    .then((response) => {
+                        console.log(response);
+                    })
+                    .catch((error) => {
+                        console.log(error.message);
+                    });
+            }
+        }
+
+        // CRUD GET DATA PATIENTS
+        const getData = async () => {
+            await axios.get(`http://localhost:3000/patients`)
+                .then((response) => {
+                    let bucket = ``;
+                    let patients = response.data;
+                    console.log(patients)
+                    if (patients.length > 0) {
+                        for (let i = 0; i < patients.length; i++) {
+                            bucket += `
+                            <tr>
+                            <td>${i + 1}</td>
+                            <td>${patients[i].date}</td>
+                            <td>${patients[i].name}</td>
+                            <td>${patients[i].age}</td>
+                            <td>${patients[i].poli}</td>
+                            <td>
+                                <button onclick="editData('${patients[i].id}', '${patients[i].date}','${patients[i].name}','${patients[i].age}','${patients[i].poli}')">Edit</button>
+                                </td>
+                            <td>
+                                <button onclick="deleteData(${patients[i].id})">Delete</button>
+                                </td>
+                            </tr>
+                            `
+                        }
+                    } else {
+                        bucket += `
+                            <tr>
+                            <td colspan="7" style="text-align: center">Data tidak ditemukan</td>
+                            </tr>   
+                        `
+                    }
+                    document.getElementById('result').innerHTML = bucket;
+                })
+                .catch((error) => {
+                    let bucket = `
+                <tr>
+                <td colspan="5" style="text-align: center">${error.messege}</td>
+                </tr>   
+            `
+                    document.getElementById('result').innerHTML = bucket;
+                });
+        };
+        getData();
+
+        // CRUD GET DATA POLIES
+        const getDatapolis = async () => {
+            await axios.get(`http://localhost:3000/polies`)
+                .then((response) => {
+                    let bucket = ``;
+                    let polis = response.data;
+                    console.log(polis);
+                    if (polis.length > 0) {
+                        for (let i = 0; i < polis.length; i++) {
+                            bucket += `
+                                 <option>${polis[i].name}</option>
+                                `;
+                        }
+                    } else {
+                        bucket += `
+                                 <option>Data tidak ditemukan</option>
+                                `;
+                    }
+                    document.getElementById('poli').innerHTML = bucket;
+                })
+                .catch((error) => {
+                    let bucket = `
+                                 <option>${error.message}</option>
+                                `;
+                    document.getElementById('poli').innerHTML = bucket;
+                });
+        };
+        getDatapolis();
+
+    </script>
+</body>
+</html>
